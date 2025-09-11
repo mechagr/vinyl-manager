@@ -1,0 +1,27 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+
+<div class="text-center">
+    <h1 class="display-4">Welcome to Vinyl Manager!</h1>
+    <p>Organise and manage your vinyl record collection.</p>
+    <p>
+        <a asp-controller="Vinyls" asp-action="Index" class="btn btn-primary btn-lg">View Collection</a>
+        <a asp-controller="Artists" asp-action="Index" class="btn btn-outline-secondary btn-lg">Browse Artists</a>
+    </p>
+</div>
+
+<div class="row mt-5">
+    <div class="col-md-4">
+        <h3>📀 Manage Records</h3>
+        <p>Keep track of your vinyl collection with detailed information about condition, year, and notes, and more.</p>
+    </div>
+    <div class="col-md-4">
+        <h3>🎵 Organise Artists</h3>
+        <p>Catalogue your favourite artists, and discover patterns in your music taste.</p>
+    </div>
+    <div class="col-md-4">
+        <h3>🏷️ Categorise Genres</h3>
+        <p>Group your records by genre to easily find what you're looking for.</p>
+    </div>
+</div>
