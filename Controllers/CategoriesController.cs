@@ -18,7 +18,8 @@ namespace VinylManager.Controllers
 
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Categories.ToListAsync());
+            var categories = await _context.Categories.ToListAsync();
+            return View(categories);
         }
 
         public async Task<IActionResult> Details(int? id)
@@ -27,28 +28,22 @@ namespace VinylManager.Controllers
 
             var category = await _context.Categories
                 .Include(c => c.Vinyls)
-                .FirstOrDefaultAsync(m => m.Id == id);
+                .FirstOrDefaultAsync(c => c.Id == id);
 
-            if (category == null) return NotFound();
-            return View(category);
+            return category is null ? NotFound() : View(category);
         }
 
-        public IActionResult Create()
-        {
-            return View();
-        }
+        public IActionResult Create() => View();
 
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,Name,Description")] Category category)
         {
-            if (ModelState.IsValid)
-            {
-                _context.Add(category);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
-            }
-            return View(category);
+            if (!ModelState.IsValid) return View(category);
+
+            _context.Add(category);
+            await _context.SaveChangesAsync();
+            return RedirectToAction(nameof(Index));
         }
 
         public async Task<IActionResult> Edit(int? id)
@@ -56,8 +51,7 @@ namespace VinylManager.Controllers
             if (id == null) return NotFound();
 
             var category = await _context.Categories.FindAsync(id);
-            if (category == null) return NotFound();
-            return View(category);
+            return category is null ? NotFound() : View(category);
         }
 
         [HttpPost]
@@ -65,34 +59,28 @@ namespace VinylManager.Controllers
         public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Description")] Category category)
         {
             if (id != category.Id) return NotFound();
+            if (!ModelState.IsValid) return View(category);
 
-            if (ModelState.IsValid)
+            try
             {
-                try
-                {
-                    _context.Update(category);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!CategoryExists(category.Id))
-                        return NotFound();
-                    else
-                        throw;
-                }
-                return RedirectToAction(nameof(Index));
+                _context.Update(category);
+                await _context.SaveChangesAsync();
             }
-            return View(category);
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!CategoryExists(category.Id)) return NotFound();
+                throw;
+            }
+
+            return RedirectToAction(nameof(Index));
         }
 
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null) return NotFound();
 
-            var category = await _context.Categories
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (category == null) return NotFound();
-            return View(category);
+            var category = await _context.Categories.FirstOrDefaultAsync(c => c.Id == id);
+            return category is null ? NotFound() : View(category);
         }
 
         [HttpPost, ActionName("Delete")]
@@ -105,12 +93,10 @@ namespace VinylManager.Controllers
                 _context.Categories.Remove(category);
                 await _context.SaveChangesAsync();
             }
+
             return RedirectToAction(nameof(Index));
         }
 
-        private bool CategoryExists(int id)
-        {
-            return _context.Categories.Any(e => e.Id == id);
-        }
+        private bool CategoryExists(int id) => _context.Categories.Any(c => c.Id == id);
     }
 }

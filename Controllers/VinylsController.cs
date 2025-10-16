@@ -33,16 +33,14 @@ namespace VinylManager.Controllers
             var vinyl = await _context.Vinyls
                 .Include(v => v.Artist)
                 .Include(v => v.Category)
-                .FirstOrDefaultAsync(m => m.Id == id);
+                .FirstOrDefaultAsync(v => v.Id == id);
 
-            if (vinyl == null) return NotFound();
-            return View(vinyl);
+            return vinyl is null ? NotFound() : View(vinyl);
         }
 
         public IActionResult Create()
         {
-            ViewData["ArtistId"] = new SelectList(_context.Artists, "Id", "Name");
-            ViewData["CategoryId"] = new SelectList(_context.Categories, "Id", "Name");
+            PopulateArtistsAndCategories();
             return View();
         }
 
@@ -50,15 +48,15 @@ namespace VinylManager.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,Title,Year,Condition,Notes,ArtistId,CategoryId")] Vinyl vinyl)
         {
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
-                _context.Add(vinyl);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                PopulateArtistsAndCategories(vinyl.ArtistId, vinyl.CategoryId);
+                return View(vinyl);
             }
-            ViewData["ArtistId"] = new SelectList(_context.Artists, "Id", "Name", vinyl.ArtistId);
-            ViewData["CategoryId"] = new SelectList(_context.Categories, "Id", "Name", vinyl.CategoryId);
-            return View(vinyl);
+
+            _context.Add(vinyl);
+            await _context.SaveChangesAsync();
+            return RedirectToAction(nameof(Index));
         }
 
         public async Task<IActionResult> Edit(int? id)
@@ -68,8 +66,7 @@ namespace VinylManager.Controllers
             var vinyl = await _context.Vinyls.FindAsync(id);
             if (vinyl == null) return NotFound();
 
-            ViewData["ArtistId"] = new SelectList(_context.Artists, "Id", "Name", vinyl.ArtistId);
-            ViewData["CategoryId"] = new SelectList(_context.Categories, "Id", "Name", vinyl.CategoryId);
+            PopulateArtistsAndCategories(vinyl.ArtistId, vinyl.CategoryId);
             return View(vinyl);
         }
 
@@ -78,26 +75,24 @@ namespace VinylManager.Controllers
         public async Task<IActionResult> Edit(int id, [Bind("Id,Title,Year,Condition,Notes,ArtistId,CategoryId")] Vinyl vinyl)
         {
             if (id != vinyl.Id) return NotFound();
-
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
-                try
-                {
-                    _context.Update(vinyl);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!VinylExists(vinyl.Id))
-                        return NotFound();
-                    else
-                        throw;
-                }
-                return RedirectToAction(nameof(Index));
+                PopulateArtistsAndCategories(vinyl.ArtistId, vinyl.CategoryId);
+                return View(vinyl);
             }
-            ViewData["ArtistId"] = new SelectList(_context.Artists, "Id", "Name", vinyl.ArtistId);
-            ViewData["CategoryId"] = new SelectList(_context.Categories, "Id", "Name", vinyl.CategoryId);
-            return View(vinyl);
+
+            try
+            {
+                _context.Update(vinyl);
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!VinylExists(vinyl.Id)) return NotFound();
+                throw;
+            }
+
+            return RedirectToAction(nameof(Index));
         }
 
         public async Task<IActionResult> Delete(int? id)
@@ -107,10 +102,9 @@ namespace VinylManager.Controllers
             var vinyl = await _context.Vinyls
                 .Include(v => v.Artist)
                 .Include(v => v.Category)
-                .FirstOrDefaultAsync(m => m.Id == id);
+                .FirstOrDefaultAsync(v => v.Id == id);
 
-            if (vinyl == null) return NotFound();
-            return View(vinyl);
+            return vinyl is null ? NotFound() : View(vinyl);
         }
 
         [HttpPost, ActionName("Delete")]
@@ -123,12 +117,16 @@ namespace VinylManager.Controllers
                 _context.Vinyls.Remove(vinyl);
                 await _context.SaveChangesAsync();
             }
+
             return RedirectToAction(nameof(Index));
         }
 
-        private bool VinylExists(int id)
+        private bool VinylExists(int id) => _context.Vinyls.Any(v => v.Id == id);
+
+        private void PopulateArtistsAndCategories(object selectedArtist = null, object selectedCategory = null)
         {
-            return _context.Vinyls.Any(e => e.Id == id);
+            ViewData["ArtistId"] = new SelectList(_context.Artists, "Id", "Name", selectedArtist);
+            ViewData["CategoryId"] = new SelectList(_context.Categories, "Id", "Name", selectedCategory);
         }
     }
 }

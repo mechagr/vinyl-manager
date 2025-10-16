@@ -15,10 +15,10 @@ namespace VinylManager.Controllers
         {
             _context = context;
         }
-
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Artists.ToListAsync());
+            var artists = await _context.Artists.ToListAsync();
+            return View(artists);
         }
 
         public async Task<IActionResult> Details(int? id)
@@ -27,28 +27,22 @@ namespace VinylManager.Controllers
 
             var artist = await _context.Artists
                 .Include(a => a.Vinyls)
-                .FirstOrDefaultAsync(m => m.Id == id);
+                .FirstOrDefaultAsync(a => a.Id == id);
 
-            if (artist == null) return NotFound();
-            return View(artist);
+            return artist is null ? NotFound() : View(artist);
         }
 
-        public IActionResult Create()
-        {
-            return View();
-        }
+        public IActionResult Create() => View();
 
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,Name,Bio")] Artist artist)
         {
-            if (ModelState.IsValid)
-            {
-                _context.Add(artist);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
-            }
-            return View(artist);
+            if (!ModelState.IsValid) return View(artist);
+
+            _context.Add(artist);
+            await _context.SaveChangesAsync();
+            return RedirectToAction(nameof(Index));
         }
 
         public async Task<IActionResult> Edit(int? id)
@@ -56,8 +50,7 @@ namespace VinylManager.Controllers
             if (id == null) return NotFound();
 
             var artist = await _context.Artists.FindAsync(id);
-            if (artist == null) return NotFound();
-            return View(artist);
+            return artist is null ? NotFound() : View(artist);
         }
 
         [HttpPost]
@@ -65,34 +58,28 @@ namespace VinylManager.Controllers
         public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Bio")] Artist artist)
         {
             if (id != artist.Id) return NotFound();
+            if (!ModelState.IsValid) return View(artist);
 
-            if (ModelState.IsValid)
+            try
             {
-                try
-                {
-                    _context.Update(artist);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!ArtistExists(artist.Id))
-                        return NotFound();
-                    else
-                        throw;
-                }
-                return RedirectToAction(nameof(Index));
+                _context.Update(artist);
+                await _context.SaveChangesAsync();
             }
-            return View(artist);
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!ArtistExists(artist.Id)) return NotFound();
+                throw;
+            }
+
+            return RedirectToAction(nameof(Index));
         }
 
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null) return NotFound();
 
-            var artist = await _context.Artists
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (artist == null) return NotFound();
-            return View(artist);
+            var artist = await _context.Artists.FirstOrDefaultAsync(a => a.Id == id);
+            return artist is null ? NotFound() : View(artist);
         }
 
         [HttpPost, ActionName("Delete")]
@@ -105,12 +92,10 @@ namespace VinylManager.Controllers
                 _context.Artists.Remove(artist);
                 await _context.SaveChangesAsync();
             }
+
             return RedirectToAction(nameof(Index));
         }
 
-        private bool ArtistExists(int id)
-        {
-            return _context.Artists.Any(e => e.Id == id);
-        }
+        private bool ArtistExists(int id) => _context.Artists.Any(a => a.Id == id);
     }
 }

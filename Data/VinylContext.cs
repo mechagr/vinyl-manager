@@ -6,7 +6,8 @@ namespace VinylManager.Data
 {
     public class VinylContext : IdentityDbContext
     {
-        public VinylContext(DbContextOptions<VinylContext> options) : base(options) { }
+        public VinylContext(DbContextOptions<VinylContext> options)
+            : base(options) { }
 
         public DbSet<Vinyl> Vinyls { get; set; }
         public DbSet<Artist> Artists { get; set; }
@@ -28,9 +29,36 @@ namespace VinylManager.Data
             );
 
             modelBuilder.Entity<Vinyl>().HasData(
-                new Vinyl { Id = 1, Title = "Phaedra", Year = 1974, Condition = "Excellent", Notes = "Hypnotic, cosmic.", ArtistId = 1, CategoryId = 1 },
-                new Vinyl { Id = 2, Title = "The Bermuda Triangle", Year = 1978, Condition = "Very Good", Notes = "Ethereal, mysterious.", ArtistId = 2, CategoryId = 1 },
-                new Vinyl { Id = 3, Title = "Obscured by Clouds", Year = 1972, Condition = "Good", Notes = "Mellow, introspective.", ArtistId = 3, CategoryId = 2 }
+                new Vinyl
+                {
+                    Id = 1,
+                    Title = "Phaedra",
+                    Year = 1974,
+                    Condition = "Excellent",
+                    Notes = "Hypnotic, cosmic.",
+                    ArtistId = 1,
+                    CategoryId = 1
+                },
+                new Vinyl
+                {
+                    Id = 2,
+                    Title = "The Bermuda Triangle",
+                    Year = 1978,
+                    Condition = "Very Good",
+                    Notes = "Ethereal, mysterious.",
+                    ArtistId = 2,
+                    CategoryId = 1
+                },
+                new Vinyl
+                {
+                    Id = 3,
+                    Title = "Obscured by Clouds",
+                    Year = 1972,
+                    Condition = "Good",
+                    Notes = "Mellow, introspective.",
+                    ArtistId = 3,
+                    CategoryId = 2
+                }
             );
 
             modelBuilder.Entity<Vinyl>()

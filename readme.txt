@@ -2,13 +2,13 @@
 
 Vinyl Manager is a full-stack web application for managing vinyl record collections, built with ASP.NET Core MVC.
 
-This project was created to demonstrate Model–View–Controller architecture, Entity Framework Core integration, and user authentication systems. It showcases my ability to build complete web applications with database persistence, RESTful routing, and secure user management within a modern web framework.
+This project was created to demonstrate Model–View–Controller (MVC) architecture, Entity Framework Core integration, and user authentication. It showcases my ability to build complete web applications with database persistence, RESTful routing, and secure user management within a modern web framework.
 
 ---
 
 ## Project Overview
 
-The goal of Vinyl Manager is to allow users to build and maintain a personal vinyl record collection. Users can add, edit, delete, and organise their records by artist and genre, with full user authentication protecting their data. Information is stored in SQL Server with Entity Framework Core handling all database operations.
+Vinyl Manager enables users to build and maintain a personal vinyl record collection. Users can add, edit, delete, and organise their records by artist and genre, with full user authentication to protect their data. All information is stored in SQL Server, with Entity Framework Core managing database operations.
 
 The application demonstrates:
 
@@ -23,12 +23,12 @@ The application demonstrates:
 
 ## Features
 
-- **Add, Edit, and Delete Records** – complete CRUD system for vinyl management  
+- **Add, Edit, and Delete Records** – full CRUD system for vinyl management  
 - **Artist and Category Management** – organise collection by performer and genre  
 - **User Authentication** – secure registration and login system  
 - **Data Relationships** – properly linked records, artists, and categories  
-- **Responsive Design** – Bootstrap-powered UI that works on all devices  
-- **Database Seeding** – automatically populate with sample vinyl records  
+- **Responsive Design** – Bootstrap-powered UI compatible with all devices  
+- **Database Seeding** – pre-populate the application with sample vinyl records  
 - **Form Validation** – client- and server-side input validation  
 - **Privacy-Conscious** – GDPR-compliant data handling and user privacy controls  
 
@@ -47,7 +47,7 @@ The application demonstrates:
 
 ## How to Run
 
-Clone the repository and run the application locally:  
+Clone the repository and run the application locally:
 
 ```bash
 git clone https://github.com/your-username/VinylManager.git

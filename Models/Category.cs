@@ -13,6 +13,6 @@ namespace VinylManager.Models
         [Display(Name = "Description")]
         public string? Description { get; set; }
 
-        public List<Vinyl> Vinyls { get; set; } = new List<Vinyl>();
+        public List<Vinyl> Vinyls { get; set; } = new();
     }
 }
